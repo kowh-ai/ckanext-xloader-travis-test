@@ -1,17 +1,14 @@
-from __future__ import division
-from __future__ import absolute_import
 import math
 import logging
 import hashlib
 import time
 import tempfile
 import json
+import urlparse
 import datetime
 import traceback
 import sys
-import six
 
-from six.moves.urllib.parse import urlsplit
 import requests
 from rq import get_current_job
 import sqlalchemy as sa
@@ -23,9 +20,9 @@ except ImportError:
     from pylons import config
 import ckan.lib.search as search
 
-from . import loader
-from . import db
-from .job_exceptions import JobError, HTTPError, DataTooBigError, FileCouldNotBeLoadedError
+import loader
+import db
+from job_exceptions import JobError, HTTPError, DataTooBigError, FileCouldNotBeLoadedError
 
 if config.get('ckanext.xloader.ssl_verify') in ['False', 'FALSE', '0', False, 0]:
     SSL_VERIFY = False
@@ -87,7 +84,7 @@ def xloader_data_into_datastore(input):
         errored = True
     except Exception as e:
         db.mark_job_as_errored(
-            job_id, traceback.format_tb(sys.exc_info()[2])[-1] + repr(e))
+            job_id, traceback.format_tb(sys.exc_traceback)[-1] + repr(e))
         job_dict['status'] = 'error'
         job_dict['error'] = str(e)
         log = logging.getLogger(__name__)
@@ -242,7 +239,7 @@ def _download_resource_data(resource, data, api_key, logger):
     '''
     # check scheme
     url = resource.get('url')
-    scheme = urlsplit(url).scheme
+    scheme = urlparse.urlsplit(url).scheme
     if scheme not in ('http', 'https', 'ftp'):
         raise JobError(
             'Only http, https, and ftp resources may be fetched.'
@@ -494,8 +491,9 @@ def get_resource_and_dataset(resource_id):
     """
     Gets available information about the resource and its dataset from CKAN
     """
-    res_dict = get_action('resource_show')(None, {'id': resource_id})
-    pkg_dict = get_action('package_show')(None, {'id': res_dict['package_id']})
+    context = {'ignore_auth': True}
+    res_dict = get_action('resource_show')(context, {'id': resource_id})
+    pkg_dict = get_action('package_show')(context, {'id': res_dict['package_id']})
     return res_dict, pkg_dict
 
 
@@ -503,7 +501,7 @@ def get_url(action, ckan_url):
     """
     Get url for ckan action
     """
-    if not urlsplit(ckan_url).scheme:
+    if not urlparse.urlsplit(ckan_url).scheme:
         ckan_url = 'http://' + ckan_url.lstrip('/')
     ckan_url = ckan_url.rstrip('/')
     return '{ckan_url}/api/3/action/{action}'.format(
@@ -560,10 +558,10 @@ class StoringHandler(logging.Handler):
         try:
             # Turn strings into unicode to stop SQLAlchemy
             # "Unicode type received non-unicode bind param value" warnings.
-            message = six.text_type(record.getMessage())
-            level = six.text_type(record.levelname)
-            module = six.text_type(record.module)
-            funcName = six.text_type(record.funcName)
+            message = unicode(record.getMessage())
+            level = unicode(record.levelname)
+            module = unicode(record.module)
+            funcName = unicode(record.funcName)
 
             conn.execute(db.LOGS_TABLE.insert().values(
                 job_id=self.task_id,
@@ -592,5 +590,5 @@ def printable_file_size(size_bytes):
     size_name = ('bytes', 'KB', 'MB', 'GB', 'TB')
     i = int(math.floor(math.log(size_bytes, 1024)))
     p = math.pow(1024, i)
-    s = round(float(size_bytes) / p, 1)
+    s = round(size_bytes / p, 1)
     return "%s %s" % (s, size_name[i])
