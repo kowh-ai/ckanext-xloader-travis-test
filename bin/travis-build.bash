@@ -64,34 +64,35 @@ sudo -u postgres psql -p $PG_PORT -c "CREATE USER datastore_default WITH PASSWOR
 sudo -u postgres psql -p $PG_PORT -c 'CREATE DATABASE ckan_test WITH OWNER ckan_default;'
 sudo -u postgres psql -p $PG_PORT -c 'CREATE DATABASE datastore_test WITH OWNER ckan_default;'
 
+
+
+echo "Create full text function..."
+cp full_text_function.sql /tmp
+cd /tmp
+sudo -u postgres psql datastore_test -f full_text_function.sql
+cd -
+
 echo "Initialising the database..."
 cd ckan
 if (( $CKAN_MINOR_VERSION >= 9 ))
 then
     ckan -c test-core.ini db init
+    ckan -c test-core.ini datastore set-permissions | sudo -u postgres psql
 else
     paster db init -c test-core.ini
+    paster datastore set-permissions -c test-core.ini | sudo -u postgres psql
 fi
 cd -
 
-echo "Installing ckanext-harvest and its requirements..."
+echo "Installing ckanext-xloader and its requirements..."
 pip install -r pip-requirements.txt
+pip install -r requirements.txt
 pip install -r dev-requirements.txt
 
 python setup.py develop
 
-
 echo "Moving test.ini into a subdir... (because the core ini file is referenced as ../ckan/test-core.ini)"
 mkdir subdir
 mv test.ini subdir
-
-echo "Setting up additional requirements..."
-if (( $CKAN_MINOR_VERSION >= 9 ))
-then
-    ckan -c subdir/test.ini harvester initdb
-else
-    paster harvester initdb -c subdir/test.ini
-fi
-
 
 echo "travis-build.bash is done."
