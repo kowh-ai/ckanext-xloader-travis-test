@@ -8,6 +8,7 @@ import urlparse
 import datetime
 import traceback
 import sys
+import six
 
 import requests
 from rq import get_current_job
@@ -558,10 +559,10 @@ class StoringHandler(logging.Handler):
         try:
             # Turn strings into unicode to stop SQLAlchemy
             # "Unicode type received non-unicode bind param value" warnings.
-            message = unicode(record.getMessage())
-            level = unicode(record.levelname)
-            module = unicode(record.module)
-            funcName = unicode(record.funcName)
+            message = six.text_type(record.getMessage())
+            level = six.text_type(record.levelname)
+            module = six.text_type(record.module)
+            funcName = six.text_type(record.funcName)
 
             conn.execute(db.LOGS_TABLE.insert().values(
                 job_id=self.task_id,
