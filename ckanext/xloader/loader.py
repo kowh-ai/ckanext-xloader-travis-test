@@ -72,7 +72,7 @@ def load_csv(csv_filepath, resource_id, mimetype='text/csv', logger=None):
     headers = encode_headers(headers)
 
     # Guess the delimiter used in the file
-    with open(csv_filepath, 'r', encoding='utf-8') as f:
+    with open(csv_filepath, 'r') as f:
         header_line = f.readline()
     try:
         sniffer = csv.Sniffer()
