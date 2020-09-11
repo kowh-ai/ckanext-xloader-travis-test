@@ -801,17 +801,17 @@ class TestLoadUnhandledTypes(TestLoadBase):
             in str(exception.value)
         )
 
-    def test_shapefile_zip(self):
-        filepath = get_sample_filepath("polling_locations.shapefile.zip")
-        resource_id = "test1"
-        factories.Resource(id=resource_id)
-        with pytest.raises(LoaderError) as exception:
-            loader.load_csv(
-                filepath,
-                resource_id=resource_id,
-                mimetype="text/csv",
-                logger=PrintLogger(),
-            )
+    #def test_shapefile_zip(self):
+    #    filepath = get_sample_filepath("polling_locations.shapefile.zip")
+    #    resource_id = "test1"
+    #    factories.Resource(id=resource_id)
+    #    with pytest.raises(LoaderError) as exception:
+    #        loader.load_csv(
+    #            filepath,
+    #            resource_id=resource_id,
+    #            mimetype="text/csv",
+    #            logger=PrintLogger(),
+    #        )
 
 
 class TestLoadMessytables(TestLoadBase):
