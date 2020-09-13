@@ -72,7 +72,7 @@ cd /tmp
 echo "Just BEFORE running full text function..."
 echo "checking out sockets on /var/run/postgresql/..."
 ls -la /var/run/postgresql/
-sudo -u postgres psql datastore_test -f full_text_function.sql
+sudo -u postgres psql -p $PG_PORT datastore_test -f full_text_function.sql
 echo "Just AFTER running full text function...."
 cd -
 
