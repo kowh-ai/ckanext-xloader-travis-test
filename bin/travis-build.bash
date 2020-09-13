@@ -67,6 +67,8 @@ sudo -u postgres psql -p $PG_PORT -c 'CREATE DATABASE datastore_test WITH OWNER 
 
 
 echo "Create full text function..."
+ls -l
+ls -l /tmp
 cp full_text_function.sql /tmp
 cd /tmp
 sudo -u postgres psql datastore_test -f full_text_function.sql
