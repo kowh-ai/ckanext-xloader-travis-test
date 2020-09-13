@@ -69,9 +69,9 @@ sudo -u postgres psql -p $PG_PORT -c 'CREATE DATABASE datastore_test WITH OWNER 
 echo "Create full text function..."
 cp full_text_function.sql /tmp
 cd /tmp
-echo "Just BEFORE running full text function..."
+echo "Just BEFORE running full text function...."
 sudo -u postgres psql datastore_test -f full_text_function.sql
-echo "Just AFTER running full text function..."
+echo "Just AFTER running full text function...."
 cd -
 
 echo "Initialising the database..."
