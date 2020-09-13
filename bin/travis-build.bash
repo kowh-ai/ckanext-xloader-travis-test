@@ -81,10 +81,10 @@ cd ckan
 if (( $CKAN_MINOR_VERSION >= 9 ))
 then
     ckan -c test-core.ini db init
-    ckan -c test-core.ini datastore set-permissions | sudo -u postgres psql
+    ckan -c test-core.ini datastore set-permissions | sudo -u postgres psql -p $PG_PORT
 else
     paster db init -c test-core.ini
-    paster datastore set-permissions -c test-core.ini | sudo -u postgres psql
+    paster datastore set-permissions -c test-core.ini | sudo -u postgres psql -p $PG_PORT
 fi
 cd -
 
