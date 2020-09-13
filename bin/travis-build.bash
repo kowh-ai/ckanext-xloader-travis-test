@@ -70,7 +70,8 @@ echo "Create full text function..."
 cp full_text_function.sql /tmp
 cd /tmp
 echo "Just BEFORE running full text function...."
-sudo -u postgres psql datastore_test -f full_text_function.sql
+ls -l /tmp/full_text_function.sql
+sudo -u postgres psql datastore_test -f /tmp/full_text_function.sql
 echo "Just AFTER running full text function...."
 cd -
 
