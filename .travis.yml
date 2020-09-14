@@ -37,7 +37,7 @@ jobs:
 #          - docker
 #
     - stage: ckanext-xloader Tests
-      python: "2.7"
+      python: "3.6"
       env: CKANVERSION=2.9
       services:
           - postgresql
@@ -45,7 +45,7 @@ jobs:
           - docker
 
 
-    - python: "3.6"
+    - python: "2.7"
       env: CKANVERSION=2.9
       services:
           - postgresql
